@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "web-hw-9"
+version = "0.1.0"
+description = "Scrapy web-site"
+authors = ["Vlad <vlad111121562@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
