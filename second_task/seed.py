@@ -12,7 +12,7 @@ from custom_logger import logger
 import config.connect_db
 
 
-def loading_data__from_file(filename: str) -> Dict[str, Union[str, List[str]]]:
+def loading_from_file(filename: str) -> Dict[str, Union[str, List[str]]]:
     """
     Load data from a JSON file.
 
@@ -37,15 +37,15 @@ def push_authors() -> None:
     Upload authors data from "authors.json" to the database.
     """
     try:
-        authors = loading_data__from_file("authors.json")
-        for el in authors:
+        authors = loading_from_file("authors.json")
+        for author in authors:
             Author(
-                fullname=el.get("fullname"),
-                born_date=el.get("born_date"),
-                born_location=el.get("born_location"),
-                description=el.get("description"),
+                fullname=author.get("fullname").replace("-", " "),
+                born_date=author.get("born_date"),
+                born_location=author.get("born_location"),
+                description=author.get("description"),
             ).save()
-            logger.log("Authors data push successfully.")
+        logger.log("Authors data push successfully.")
     except Exception as e:
         logger.log(f"Error push authors data - {e}", level=40)
 
@@ -55,11 +55,13 @@ def push_quotes() -> None:
     Upload quotes data from 'quotes.json' to the database.
     """
     try:
-        quotes = loading_data__from_file("quotes.json")
-        for el in quotes:
-            author, *_ = Author.objects(fullname=el.get("author"))
-            Quote(quote=el.get("quote"), tags=el.get("tags"), author=author).save()
-            logger.log("Quotes data push successfully.")
+        quotes = loading_from_file("quotes.json")
+        for quote in quotes:
+            author, *_ = Author.objects(fullname=quote.get("author"))
+            Quote(
+                quote=quote.get("quote"), tags=quote.get("tags"), author=author
+            ).save()
+        logger.log("Quotes data push successfully.")
     except Exception as e:
         logger.log(f"Error push quotes data - {e}", level=40)
 
@@ -77,3 +79,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+    
