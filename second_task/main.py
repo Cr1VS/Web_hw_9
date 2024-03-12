@@ -8,22 +8,31 @@ import scrapy
 
 
 class QuoteItem(Item):
-    """Class representing a quote item."""
+    """
+    Class representing a quote item.
+    """
+
     quote = Field()
     author = Field()
     tags = Field()
 
 
 class AuthorItem(Item):
-    """Class representing an author item."""
+    """
+    Class representing an author item.
+    """
+
     fullname = Field()
     born_date = Field()
-    born_location =Field()
-    description =Field()
+    born_location = Field()
+    description = Field()
 
 
 class DataPipline:
-    """Pipeline class to process scraped items."""
+    """
+    Pipeline class to process scraped items.
+    """
+
     quotes: List[Dict[str, Union[str, List[str]]]] = []
     authors: List[Dict[str, str]] = []
 
@@ -72,7 +81,10 @@ class QuotesSpider(scrapy.Spider):
             author: str = q.xpath("span/small[@class='author']/text()").get().strip()
             tags: List[str] = q.xpath("div[@class='tags']/a/text()").extract()
             yield QuoteItem(quote=quote, author=author, tags=tags)
-            yield response.follow(url=self.start_urls[0] + q.xpath("span/a/@href").get(), callback=self.parse_author)
+            yield response.follow(
+                url=self.start_urls[0] + q.xpath("span/a/@href").get(),
+                callback=self.parse_author,
+            )
 
         next_link: str = response.xpath("/html//li[@class='next']/a/@href").get()
         if next_link:
@@ -88,10 +100,21 @@ class QuotesSpider(scrapy.Spider):
         """
         content = response.xpath("/html//div[@class='author-details']")
         fullname: str = content.xpath("h3[@class='author-title']/text()").get().strip()
-        born_date: str = content.xpath("p/span[@class='author-born-date']/text()").get().strip()
-        born_location: str = content.xpath("p/span[@class='author-born-location']/text()").get().strip()
-        description: str = content.xpath("div[@class='author-description']/text()").get().strip()
-        yield AuthorItem(fullname=fullname, born_date=born_date, born_location=born_location, description=description)
+        born_date: str = (
+            content.xpath("p/span[@class='author-born-date']/text()").get().strip()
+        )
+        born_location: str = (
+            content.xpath("p/span[@class='author-born-location']/text()").get().strip()
+        )
+        description: str = (
+            content.xpath("div[@class='author-description']/text()").get().strip()
+        )
+        yield AuthorItem(
+            fullname=fullname,
+            born_date=born_date,
+            born_location=born_location,
+            description=description,
+        )
 
 
 if __name__ == "__main__":
